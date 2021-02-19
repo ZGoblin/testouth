@@ -46,10 +46,12 @@ class MainActivity : AppCompatActivity() {
             Log.d("TAG_11", "token $token")
             val user = githubUtils.getUser(token)
             val repos = githubUtils.getRepos(token)
+            val contr = githubUtils.getContributors(token)
 
             Log.d("TAG_11", "user name ${user.name}")
             Log.d("TAG_11", "user avatar ${user.avatar_url}")
             Log.d("TAG_11", "user repos ${repos}")
+            Log.d("TAG_11", "repo contr ${contr}")
         }
     }
 }

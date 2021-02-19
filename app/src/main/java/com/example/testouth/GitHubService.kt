@@ -20,4 +20,8 @@ interface GitHubService {
   @Headers("Accept: application/vnd.github.v3+json")
   @GET("/user/repos")
   suspend fun getRepos(@Header("Authorization") auth: String): List<Repos>
+
+  @Headers("Accept: application/vnd.github.v3+json")
+  @GET("/repos/{owner}/{repo}/contributors")
+  suspend fun getContributors(@Header("Authorization") auth: String, @Path("repo") repo: String, @Path("owner") owner: String): List<User>
 }

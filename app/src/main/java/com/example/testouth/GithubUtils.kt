@@ -84,4 +84,18 @@ class GithubUtils {
         val gitSer = retrofit.create(GitHubService::class.java)
         return gitSer.getRepos(token)
     }
+
+    suspend fun getContributors(token: String): List<User> {
+        val retrofit = Retrofit.Builder()
+            .client(
+                OkHttpClient().newBuilder()
+                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .build()
+            )
+            .baseUrl(HttpUrl.Builder().scheme(schema).host("api.github.com").build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val gitSer = retrofit.create(GitHubService::class.java)
+        return gitSer.getContributors(token, "github_project", "ZGoblin")
+    }
 }
