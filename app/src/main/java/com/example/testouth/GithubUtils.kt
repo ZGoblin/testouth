@@ -18,21 +18,28 @@ class GithubUtils {
     const val host = "github.com"
   }
 
-  private val retrofit: Retrofit by lazy {
+  private val retrofit by lazy {
     Retrofit.Builder()
         .client(
             OkHttpClient().newBuilder()
                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
         )
-        .baseUrl(HttpUrl.Builder().scheme(schema).host(host).build())
         .addConverterFactory(GsonConverterFactory.create())
-        .build()
   }
 
-  private val githubService: GitHubService by lazy {
-    retrofit.create(GitHubService::class.java)
+  private val githubServiceOauth: GitHubService by lazy {
+    retrofit
+        .baseUrl(HttpUrl.Builder().scheme(schema).host(host).build())
+        .build()
+        .create(GitHubService::class.java)
   }
+    private val githubService: GitHubService by lazy { retrofit
+        retrofit
+            .baseUrl(HttpUrl.Builder().scheme(schema).host("api.github.com").build())
+            .build()
+            .create(GitHubService::class.java)
+    }
 
   fun buildAuthGitHubUrl(): Uri {
     return Uri.Builder()
@@ -54,48 +61,18 @@ class GithubUtils {
   }
 
   suspend fun getAccesToken(code: String): AccessToken {
-    return githubService.getAccessToken(clientId, clientSecret, code)
+    return githubServiceOauth.getAccessToken(clientId, clientSecret, code)
   }
 
   suspend fun getUser(token: String): User {
-      val retrofit = Retrofit.Builder()
-          .client(
-              OkHttpClient().newBuilder()
-                  .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                  .build()
-          )
-          .baseUrl(HttpUrl.Builder().scheme(schema).host("api.github.com").build())
-          .addConverterFactory(GsonConverterFactory.create())
-          .build()
-      val gitSer = retrofit.create(GitHubService::class.java)
-    return gitSer.getUser(token)
+    return githubService.getUser(token)
   }
 
     suspend fun getRepos(token: String): List<Repos> {
-        val retrofit = Retrofit.Builder()
-            .client(
-                OkHttpClient().newBuilder()
-                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                    .build()
-            )
-            .baseUrl(HttpUrl.Builder().scheme(schema).host("api.github.com").build())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val gitSer = retrofit.create(GitHubService::class.java)
-        return gitSer.getRepos(token)
+        return githubService.getRepos(token)
     }
 
     suspend fun getContributors(token: String): List<User> {
-        val retrofit = Retrofit.Builder()
-            .client(
-                OkHttpClient().newBuilder()
-                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                    .build()
-            )
-            .baseUrl(HttpUrl.Builder().scheme(schema).host("api.github.com").build())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val gitSer = retrofit.create(GitHubService::class.java)
-        return gitSer.getContributors(token, "github_project", "ZGoblin")
+        return githubService.getContributors(token, "github_project", "ZGoblin")
     }
 }
